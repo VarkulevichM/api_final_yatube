@@ -10,6 +10,7 @@ from api.serializers import GroupSerializer
 from api.serializers import PostSerializer
 from posts.models import Group
 from posts.models import Post
+from posts.models import User
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -53,11 +54,11 @@ class FollowViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        user = self.request.user
+
+        user = get_object_or_404(User,  username=self.request.user)
         queryset = user.follower.all()
 
         return queryset
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
