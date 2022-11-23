@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import filters
+from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
@@ -33,32 +34,31 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (AuthorOrReadOnly,)
 
     def get_queryset(self):
-
         post_id = self.kwargs.get("post_id")
         post = get_object_or_404(Post, pk=post_id)
-        queryset = post.comments.all()
 
-        return queryset
+        return post.comments.all()
 
     def perform_create(self, serializer):
-
         post_id = self.kwargs.get("post_id")
         post = get_object_or_404(Post, pk=post_id)
         serializer.save(author=self.request.user, post=post)
 
 
-class FollowViewSet(viewsets.ModelViewSet):
+class FollowViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+):
     serializer_class = FollowSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ("following__username",)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-
         user = get_object_or_404(User, username=self.request.user)
-        queryset = user.follower.all()
 
-        return queryset
+        return user.follower.all()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
