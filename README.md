@@ -63,6 +63,8 @@ python3 manage.py runserver
         "image": null,
         "group": null
     }
+    
+Все доступные запросы можно посмотреть на http://127.0.0.1:8000/redoc/
 ### Технологии:
 - Python 3.7
 - Django 2.2.16
